@@ -28,15 +28,7 @@ var (
 )
 
 func banner(au Aurora) {
-	fmt.Print(au.BrightRed(`
-██╗  ██╗ █████╗ ██╗  ██╗██████╗  █████╗ ██╗    ██╗██╗     ███████╗██████╗ 
-██║  ██║██╔══██╗██║ ██╔╝██╔══██╗██╔══██╗██║    ██║██║     ██╔════╝██╔══██╗
-███████║███████║█████╔╝ ██████╔╝███████║██║ █╗ ██║██║     █████╗  ██████╔╝
-██╔══██║██╔══██║██╔═██╗ ██╔══██╗██╔══██║██║███╗██║██║     ██╔══╝  ██╔══██╗
-██║  ██║██║  ██║██║  ██╗██║  ██║██║  ██║╚███╔███╔╝███████╗███████╗██║  ██║
-╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚══╝╚══╝ ╚══════╝╚══════╝╚═╝  ╚═╝
-`))
-	fmt.Println(BgBlue(au.BrightYellow("                        Crafted with <3 by hakluke                        ")))
+	fmt.Print(`Welcome`)
 }
 
 // if -plain is set, just print the message, otherwise print a coloured tag and then the message
@@ -131,7 +123,7 @@ func parseSitemap(domain string, depth int, c colly.Collector, printResult bool,
 	sitemapURL := schema + domain + "/sitemap.xml"
 	sitemap.ParseFromSite(sitemapURL, func(e sitemap.Entry) error {
 		if printResult {
-			_ = printIfInScope(scope, au.BrightBlue("[sitemap]"), schema, domain, e.GetLocation(), plain, outdirPtr)
+			_ = printIfInScope(scope, "[sitemap]", schema, domain, e.GetLocation(), plain, outdirPtr)
 		}
 		// if depth is greater than 1, add sitemap url as seed
 		if depth > 1 {
@@ -162,7 +154,7 @@ func parseRobots(domain string, depth int, c colly.Collector, printResult bool, 
 			if strings.Contains(line, "llow: ") {
 				urlstring := re.ReplaceAllString(line, "")
 				if printResult {
-					_ = printIfInScope(scope, au.BrightMagenta("[robots]"), schema, domain, schema+domain+urlstring, plain, outdirPtr)
+					_ = printIfInScope(scope, "[robots]", schema, domain, schema+domain+urlstring, plain, outdirPtr)
 				}
 				//add it to a slice for parsing later
 				robotsurls = append(robotsurls, schema+domain+urlstring)
@@ -201,8 +193,8 @@ func crawl(domain string, depthPtr *int, outdirPtr *string, includeJSPtr *bool, 
 
 	// make sure the domain has been set
 	if domain == "" {
-		fmt.Println(au.BrightRed("[error]"), "You must set a domain, e.g. -domain=example.com")
-		fmt.Println(au.BrightBlue("[info]"), "See hakrawler -h for commandline options")
+		fmt.Println("[error]", "You must set a domain, e.g. -domain=example.com")
+		fmt.Println("[info]", "See hakrawler -h for commandline options")
 		os.Exit(1)
 	}
 
@@ -256,14 +248,14 @@ func crawl(domain string, depthPtr *int, outdirPtr *string, includeJSPtr *bool, 
 					fmt.Println(err)
 				} else {
 					if *includeURLsPtr || *includeAllPtr {
-						_ = printIfInScope(*scopePtr, au.BrightYellow("[url]"), schema, domain, urlString, *plain, outdirPtr)
+						_ = printIfInScope(*scopePtr, "[url]", schema, domain, urlString, *plain, outdirPtr)
 						urls[urlString] = struct{}{}
 					}
 					// if this is a new subdomain, print it
 					if *includeSubsPtr || *includeAllPtr {
 						if _, ok := subdomains[urlObj.Host]; !ok {
 							if urlObj.Host != "" {
-								_ = printIfInScope(*scopePtr, au.BrightGreen("[subdomain]"), schema, domain, urlObj.Host, *plain, outdirPtr)
+								_ = printIfInScope(*scopePtr, "[subdomain]", schema, domain, urlObj.Host, *plain, outdirPtr)
 								subdomains[urlObj.Host] = struct{}{}
 							}
 						}
@@ -280,10 +272,10 @@ func crawl(domain string, depthPtr *int, outdirPtr *string, includeJSPtr *bool, 
 			jsfile := e.Request.AbsoluteURL(e.Attr("src"))
 			if _, ok := jsfiles[jsfile]; !ok {
 				if jsfile != "" {
-					inScope := printIfInScope(*scopePtr, au.BrightRed("[javascript]"), schema, domain, jsfile, *plain, outdirPtr)
+					inScope := printIfInScope(*scopePtr, "[javascript]", schema, domain, jsfile, *plain, outdirPtr)
 					if inScope {
 						if *runlinkfinder {
-							linkfinder(jsfile, au.BrightRed("[linkfinder]"), plain)
+							linkfinder(jsfile, "[linkfinder]", plain)
 						}
 					}
 					jsfiles[jsfile] = struct{}{}
@@ -298,7 +290,7 @@ func crawl(domain string, depthPtr *int, outdirPtr *string, includeJSPtr *bool, 
 			form := e.Request.AbsoluteURL(e.Attr("action"))
 			if _, ok := forms[form]; !ok {
 				if form != "" {
-					_ = printIfInScope(*scopePtr, au.BrightCyan("[form]"), schema, domain, form, *plain, outdirPtr)
+					_ = printIfInScope(*scopePtr, "[form]", schema, domain, form, *plain, outdirPtr)
 					forms[form] = struct{}{}
 				}
 			}
@@ -356,7 +348,7 @@ func crawl(domain string, depthPtr *int, outdirPtr *string, includeJSPtr *bool, 
 					if _, ok := subdomains[urlObj.Host]; !ok {
 						if urlObj.Host != "" {
 							if strings.Contains(urlObj.Host, domain) {
-								_ = printIfInScope(*scopePtr, au.BrightGreen("[subdomain]"), schema, domain, urlObj.Host, *plain, outdirPtr)
+								_ = printIfInScope(*scopePtr, "[subdomain]", schema, domain, urlObj.Host, *plain, outdirPtr)
 								subdomains[urlObj.Host] = struct{}{}
 							}
 						}
