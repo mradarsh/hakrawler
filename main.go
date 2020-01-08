@@ -123,7 +123,7 @@ func parseSitemap(domain string, depth int, c colly.Collector, printResult bool,
 	sitemapURL := schema + domain + "/sitemap.xml"
 	sitemap.ParseFromSite(sitemapURL, func(e sitemap.Entry) error {
 		if printResult {
-			_ = printIfInScope(scope, "[sitemap]", schema, domain, e.GetLocation(), plain, outdirPtr)
+			_ = printIfInScope(scope, ("[sitemap]"), schema, domain, e.GetLocation(), plain, outdirPtr)
 		}
 		// if depth is greater than 1, add sitemap url as seed
 		if depth > 1 {
